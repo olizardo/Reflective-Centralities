@@ -19,6 +19,9 @@
 
 %\documentclass[a4paper,fleqn,longmktitle]{cas-sc}
 \documentclass[a4paper,fleqn]{cas-sc}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 % \usepackage[numbers]{natbib}
 %\usepackage[authoryear]{natbib}
@@ -198,9 +201,11 @@ And after this is done for each step $q > 0$:
     \label{eq:bon4}
 \end{equation}
 
-Where the denominator in~\ref{eq:bon4} is the Euclidean vector norm.\footnote{For any vector $\mathbf{x}$ of length $n$, the $L_2$ norm is: $||\mathbf{x}||_2 = \sqrt{\sum_i^n x_i^2}$. Dividing by any vector norm---e.g., the $L_1$ or max norm---will prevent divergence and return scores perfectly correlated to the leading eigenvector approach. Dividing by the $L_2$ norm returns scores that are \textit{exactly} the same, save for rounding error, as the absolute value of the leading eigenvector of the adjacency matrix.} As we progress in the series of iterations $q = \{1, 2, 3, \ldots\}$, $\mathbf{x}$ is bound to converge (as long as we apply the normalization) to a steady value. These values will be equivalent (up to rounding error) to the (absolute value) of the leading eigenvector of $\mathbf{A}$.
+Where the denominator in~\ref{eq:bon4} is the Euclidean vector norm.\footnote{For any vector $\mathbf{x}$ of length $n$, the $L_2$ norm is: $||\mathbf{x}||_2 = \sqrt{\sum_i^n x_i^2}$. Dividing by any vector norm---e.g., the $L_1$ or max norm---will prevent divergence and return scores perfectly correlated to the leading eigenvector approach. Dividing by the $L_2$ norm returns scores that are \textit{exactly} the same, save for rounding error, as the absolute value of the dominant right eigenvector of the adjacency matrix.} As we progress in the series of iterations $q = \{1, 2, 3, \ldots\}$, $\mathbf{x}$ is bound to converge (as long as we apply the normalization) to a steady value. These values will be equivalent (up to rounding error) to the (absolute value) of the dominant right eigenvector of $\mathbf{A}$.
 
 But this eigenvector property is less revealing regarding the type of centrality computed by~\ref{eq:bon2} than a focus on the iterative reflective process itself, even though this iteration is seldom made apparent in presentations of the eigenvector centrality. What is revealed here is the set of assumptions implicit in the standard Bonacich centrality. These can be glossed as follows: (1) At each step, each node in the graph receives the same amount of (normalized) centrality from each of its neighbors, implying that (2) nodes distribute the same ``amount'' to each of their neighbors regardless of their own level of connectivity. This gives the centrality of each node at $q$. At $q + 1$, each node repeats that step with the centrality they accumulated in the previous round, and so on, until convergence.  The ``top'' (most central) nodes are the ones bound to receive the most \textit{total} normalized centrality from their neighbors---who received it from their neighbors, who received it from their neighbors---as $q$ approaches a limit. 
+
+\input{Tabs/bonacich}
 
 \subsection{The Seeley/PageRank Index as a Reflective Centrality}
 The assumptions encoded in the classic Bonacich reflective centrality are reasonable but not the only ones we can make. Changing the assumptions leads to a different reflective measure. For instance, take assumption (2) above. This assumption could be questioned. Perhaps a more sensible assumption is that nodes do not distribute the same quantum of centrality to their neighbors regardless of their own degree. Instead, each node ``gets'' some centrality from their neighbor that is \textit{proportional} to their neighbor's degree, with neighbors taking the same centrality quantum, dividing it according to how many neighbors they have, and then sending it along. Thus, a node with many neighbors distributes less centrality to each one of its neighbors than a node with just a few neighbors.
@@ -261,6 +266,20 @@ Just like the other centralities considered, Kleinberg shows that the final $\ma
 
 \subsection{Stochastic HITS as a Reflective Centrality}
 
+\begin{figure}[t!]
+    \captionsetup[subfigure]{font=footnotesize,labelfont=footnotesize}
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=1.0\textwidth]{Plots/directed.png}
+        \caption{}
+        \label{fig:directed}
+    \end{subfigure} 
+     \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=1.0\textwidth]{Plots/undirected.png}
+        \caption{}
+        \label{fig:undirected}
+    \end{subfigure}
+\end{figure}
 
 %% Loading bibliography style file
 % \bibliographystyle{model1-num-names}
