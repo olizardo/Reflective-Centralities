@@ -51,13 +51,32 @@
      seeley.res <- seeley(B)
      t.b <- bon.res$m[, bon.res$k]
      t.b <- sort(t.b, decreasing = TRUE)
+     t.b <- cbind(names(t.b), round(t.b, 3))
      t.s <- seeley.res$m[, seeley.res$k]
      t.s <- sort(t.s, decreasing = TRUE)
-     kbl(list(t.b, t.s), format = "latex", booktabs = T, 
-       linesep = "", digits = 3, col.names = c("Bonacich", "")) %>%
-     kable_styling(latex_options = c("hold_position")) %>% 
-     column_spec(1, bold = TRUE) %>% 
-     save_kable(here("Tabs", "tab1.tex"))
+     t.s <- cbind(names(t.s), round(t.s, 3))
+     hits.res <- hits(A)
+     t.a <- hits.res$m.a[, hits.res$k]
+     t.h <- hits.res$m.h[, hits.res$k]
+     t.a <- sort(t.a, decreasing = TRUE)
+     t.h <- sort(t.h, decreasing = TRUE)
+     t.a <- cbind(names(t.a), round(t.a, 3))
+     t.h <- cbind(names(t.h), round(t.h, 3))
+
+     t <- data.frame(cbind(t.b, t.s, t.a, t.h))
+     kbl(t, format = "latex", booktabs = T, 
+          linesep = "", digits = 3, 
+         row.names = FALSE,
+         col.names = c("", "Bonacich", "", "Seeley", "", "Hub Score", "", "Auth. Score")) %>%
+          kable_styling(latex_options = c("hold_position")) %>% 
+                    column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
+
+          save_kable(here("Tabs", "tab1.tex"))
+
+```
+          
+          
+          
 ```
 
 
