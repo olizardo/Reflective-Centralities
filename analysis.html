@@ -97,10 +97,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="analysis_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+</head><body class="fullcontent">\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 
-</head>
 
-<body class="fullcontent">
+
+
+
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 
@@ -111,21 +126,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="analysis" class="level1">
 <h1>Analysis</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"hits.R"</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"salsa.R"</span>))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"seeley.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"bonacich.R"</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"hits.R"</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"salsa.R"</span>))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">source</span>(<span class="fu">here</span>(<span class="st">"Functions"</span>, <span class="st">"seeley.R"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">set.seed</span>(<span class="dv">235</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>     gr <span class="ot">&lt;-</span> <span class="fu">play_gnp</span>(<span class="dv">12</span>, .<span class="dv">15</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>, <span class="at">loops =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>     gr <span class="ot">&lt;-</span> <span class="fu">play_gnp</span>(<span class="dv">12</span>, .<span class="dv">18</span>, <span class="at">directed =</span> <span class="cn">TRUE</span>, <span class="at">loops =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">name =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>])</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(gr, <span class="at">layout =</span> <span class="st">'kk'</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_edge_parallel</span>(<span class="at">color =</span> <span class="st">"steelblue4"</span>, <span class="at">edge_width =</span> <span class="fl">1.15</span>,</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="dv">5</span>, <span class="st">'mm'</span>)),</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">end_cap =</span> <span class="fu">circle</span>(<span class="dv">8</span>, <span class="st">'mm'</span>), </span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">sep =</span> <span class="fu">unit</span>(<span class="dv">8</span>, <span class="st">'mm'</span>))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">18</span>, <span class="at">color =</span> <span class="st">"tan2"</span>) </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">8</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">22</span>, <span class="at">color =</span> <span class="st">"tan2"</span>) </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">theme_graph</span>() </span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>     p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -133,17 +149,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>     ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(<span class="fu">here</span>(<span class="st">"Plots"</span>, <span class="st">"directed.png"</span>), <span class="at">width =</span> <span class="dv">15</span>, <span class="at">height =</span> <span class="dv">15</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>     </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>     gr.u <span class="ot">&lt;-</span> <span class="fu">simplify</span>(gr)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>     gr.u <span class="ot">&lt;-</span> <span class="fu">as.undirected</span>(gr, <span class="at">mode =</span> <span class="st">"collapse"</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> <span class="fu">ggraph</span>(gr.u, <span class="at">layout =</span> <span class="st">'kk'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_edge_link</span>(<span class="at">color =</span> <span class="st">"steelblue"</span>, <span class="at">edge_width =</span> <span class="fl">1.25</span>) </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">18</span>, <span class="at">color =</span> <span class="st">"tan2"</span>) </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">8</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">22</span>, <span class="at">color =</span> <span class="st">"tan2"</span>) </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>     p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">theme_graph</span>() </span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="analysis_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>     ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(<span class="fu">here</span>(<span class="st">"Plots"</span>, <span class="st">"undirected.png"</span>), <span class="at">width =</span> <span class="dv">15</span>, <span class="at">height =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>     ggplot2<span class="sc">::</span><span class="fu">ggsave</span>(<span class="fu">here</span>(<span class="st">"Plots"</span>, <span class="st">"undirected.png"</span>), <span class="at">width =</span> <span class="dv">15</span>, <span class="at">height =</span> <span class="dv">15</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">as_adjacency_matrix</span>(gr))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    B <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">as_adjacency_matrix</span>(gr.u))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>     bon.res <span class="ot">&lt;-</span> <span class="fu">bonacich</span>(B)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     seeley.res <span class="ot">&lt;-</span> <span class="fu">seeley</span>(B)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>     t.b <span class="ot">&lt;-</span> bon.res<span class="sc">$</span>m[, bon.res<span class="sc">$</span>k]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>     t.b <span class="ot">&lt;-</span> <span class="fu">sort</span>(t.b, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>     t.s <span class="ot">&lt;-</span> seeley.res<span class="sc">$</span>m[, seeley.res<span class="sc">$</span>k]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>     t.s <span class="ot">&lt;-</span> <span class="fu">sort</span>(t.s, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>     <span class="fu">kbl</span>(<span class="fu">list</span>(t.b, t.s), <span class="at">format =</span> <span class="st">"latex"</span>, <span class="at">booktabs =</span> T, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">linesep =</span> <span class="st">""</span>, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Bonacich"</span>, <span class="st">""</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>     <span class="fu">kable_styling</span>(<span class="at">latex_options =</span> <span class="fu">c</span>(<span class="st">"hold_position"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>     <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>     <span class="fu">save_kable</span>(<span class="fu">here</span>(<span class="st">"Tabs"</span>, <span class="st">"tab1.tex"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
