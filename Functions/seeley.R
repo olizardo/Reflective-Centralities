@@ -1,7 +1,7 @@
-seeley.iter <- function(A, e = 0.000001) {
+seeley <- function(A, e = 0.000001) {
      n <- nrow(A)
      P <- diag(1/rowSums(A)) %*% A
-     c <- rep(1, n) / n
+     c <- rep(1, n) 
      m <- c
      w <- 1
      k <- 0
