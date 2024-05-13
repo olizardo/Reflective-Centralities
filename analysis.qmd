@@ -19,21 +19,28 @@
 
 ```{r}
     set.seed(456)
-    dg <- play_gnp(12, .2) %>% 
+    dg <- play_gnp(12, .25) %>% 
         mutate(name = LETTERS[1:12]) 
     ug <- as.undirected(gr, mode = "collapse")
     oz <- which(rowSums(A) == 0)
     iz <- which(colSums(A) == 0)
-    nodes <- 1:12
-    for (i in oz)  {
-        dg <- add_edges(dg, c(i, sample(nodes[-oz], 1)))
+    iso.i <- which(degree(dg, mode = "in") == 0)
+    iso.o <- which(degree(dg, mode = "out") == 0)
+    v <- 1:12
+    for (i in iso.i) {
+        inei <- v[-c(iso.i)]
+        dg <- add_edges(dg, c(sample(inei, 1),i))
         }
-    for (j in iz) {
-        dg <- add_edges(dg, c(sample(nodes[-iz], 1),j))
+    for (i in iso.o) {
+        onei <- v[-c(iso.o)]
+        dg <- add_edges(dg, c(i,sample(onei,1)))
         }
+    ug <- as.undirected(dg, mode = "collapse")
     A <- as.matrix(as_adjacency_matrix(dg))
     B <- as.matrix(as_adjacency_matrix(ug))
+```
 
+```{r}
     p <- ggraph(dg, layout = 'stress')
     p <- p + geom_edge_parallel(color = "steelblue4", edge_width = 1.15,
           arrow = arrow(length = unit(5, 'mm')),
@@ -64,9 +71,9 @@
     e1 <- eigen(Dr %*% A %*% Dc %*% t(A))
     e2 <- eigen(Dc %*% t(A) %*% Dr %*% A)
     sa <- salsa(A)
-    a <- cbind(e1$vectors[, 2], e2$vectors[, 2], 
-               ca$row$coord[,1], ca$col$coord[,1], sa$m.h[, sa$k], sa$m.a[,sa$k])
+    a <- cbind(Re(e1$vectors[, 2]), sa$m.h[, sa$k], Re(e2$vectors[, 2]), sa$m.a[,sa$k])
     round(cor(a), 2)
+    a
 ```
 
 
@@ -96,7 +103,7 @@
                        "Hub Score", "", "Auth. Score")) %>%
           kable_styling(latex_options = c("hold_position")) %>% 
           column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
-          column_spec(1:8, width = "1 em") %>% 
+          column_spec(1:8, width = "1.5 em") %>% 
           save_kable(here("Tabs", "tab1.tex"))
 
 ```
