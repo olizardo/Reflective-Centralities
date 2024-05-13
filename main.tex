@@ -275,12 +275,42 @@ To break the reflective spell posed by~\ref{eq:klein1}, we just initialize $\mat
     \label{eq:klein2}
 \end{equation}
 
-While making sure to normalize both $\mathbf{x}_a(q)$ and $\mathbf{x}_h(q)$ by a vector norm at each step $q > 0$. Equation~\ref{eq:klein2} effectively reflects that a node's authority score is just the sum of the hub scores of its in-neighbors, while a node's hub score is just the sum of the authority scores of its out-neighbors. This measure, therefore, captures the ``doubling'' of reflective centralities in the directed case, where people\ get centrality from being pointed to by central others, and central others are those who get their centrality by pointing to central people. 
+While making sure to normalize both $\mathbf{x}_a(q)$ and $\mathbf{x}_h(q)$ by a vector norm at each step $q > 0$. Equation~\ref{eq:klein2} effectively says that a node's authority score is just the sum of the hub scores of its in-neighbors, while a node's hub score is just the sum of the authority scores of its out-neighbors. This measure, therefore, captures the ``doubling'' of reflective centralities in the directed case, where people\ get centrality from being pointed to by central others, and central others are those who get their centrality by pointing to central people. 
 
-Just like the other centralities considered, Kleinberg shows that the final $\mathbf{x}_a$ and $\mathbf{x}_h$ vectors end up being the solutions to a leading eigenvector problem (thus qualifying this centrality as part of the family of eigenvector centralities). The convergent $\mathbf{x}_a$ score is the leading eigenvector of the common in-neighbors matrix $\mathbf{A}^T\mathbf{A}$, while the $\mathbf{x}_a$ score is the leading eigenvector of the common out-neighbors matrix $\mathbf{A}\mathbf{A}^T$. Alternatively, $\mathbf{x}_a$ and $\mathbf{x}_h$ are the left and right singular vectors of the adjacency matrix $\mathbf{A}$, respectively.
+Just like the other centralities considered, Kleinberg shows that the final $\mathbf{x}_a$ and $\mathbf{x}_h$ vectors end up being the solutions to a leading eigenvector problem (thus qualifying this centrality as part of the family of eigenvector centralities). The convergent $\mathbf{x}_a$ score is the leading eigenvector of the common in-neighbors matrix $\mathbf{A}^T\mathbf{A}$, while the $\mathbf{x}_h$ score is the leading eigenvector of the common out-neighbors matrix $\mathbf{A}\mathbf{A}^T$. Alternatively, $\mathbf{x}_a$ and $\mathbf{x}_h$ are the left and right singular vectors of the adjacency matrix $\mathbf{A}$, respectively.
 
-\subsection{Stochastic HITS as a Reflective Centrality}
+\subsection{SALSA/CA as a Reflective Centrality}
+We can imagine combining the reasoning behind the Seeley/PageRank reflective centrality index and the Kleinberg Hubs and Authorities approach. Kleinberg's HITS algorithm presumes that hubs and authorities receive the same ``amount'' of centralities from their out and in-neighbors (respectively) regardless of their hub and authority status (e.g., their own out and in-degree). We can use the same reasoning that led us to question this assumption in the traditional Bonacich centrality (which led us to the PageRank reflective centrality) to modify Kleinberg's HITS. The reasoning is as follows.
 
+At each step, we assume that each hub distributes some ``amount' of centrality to each authority they point to relative to their own out-degree. The authority score of each node is then the average of this quantity across all their in-neighbors (potential hubs). At the same time, we also assume that each authority distributes some ``amount'' of centrality to the hubs that point to them relative to their own in-degree. The hub score of each node is then the average of this quantity across all their out-neighbors (potential authorities). At the initial step, each node begins with authority and hub scores equal to their in and out-degrees.  
+
+In reflective terms:
+
+\begin{equation}
+    \begin{split}
+        &\mathbf{x}_a(q) = \frac{\mathbf{A}^T\mathbf{x}_h(q-1)}{\mathbf{x}_a(0)}  \\
+        &\mathbf{x}_h(q) = \frac{\mathbf{A}\mathbf{x}_a(q)}{\mathbf{x}_h(0)}  \\ 
+        & (q > 0) \\ \\
+        &\mathbf{x}_a(0) = k^{in} = \sum_i a_{i.} \\
+        &\mathbf{x}_h(0) = k^{out} = \sum_j a_{.j}     
+    \end{split}
+    \label{eq:ca1}
+\end{equation}
+
+Where $k^{in}$ is just the vector of node in-degrees, and $k^{out}$ is the vector of out-degrees. At step $q = 1$, equation~\ref{eq:ca1} says that the authority score of each node ($\mathbf{x}_a(1)$) is just the sum of the outdegrees ($\mathbf{x}_h(0)$) of the nodes that point to them averaged across all their in-neighbors ($\mathbf{x}_a(0)$). The hub score of each node at the same time step is just this last quantity ($\mathbf{x}_a(1)$) averaged across all their out-neighbors ($\mathbf{x}_h(0)$). We then iterate until there is negligible change in authority and hub scores between iterations. Because we are taking averages of sums of averages of sums of averages, the differences between authority and hub scores across nodes will decrease toward zero as we iterate. We can keep the respective scores spread apart using the usual z-score normalization at each step before feeding it forward:
+
+\begin{equation}
+    \begin{split}
+        &\mathbf{x}_a(q) = \frac{\mathbf{x}_a(q) - \mathbf{\Bar{x}}_a(q)}{sd(\mathbf{x}_a(q))} \\
+        &\mathbf{x}_h(q) = \frac{\mathbf{x}_h(q) - \mathbf{\Bar{x}}_h(q)}{sd(\mathbf{x}_h(q))} \\ 
+        & (q > 0) 
+    \end{split}
+    \label{eq:ca-norm}
+\end{equation}
+
+Where $\mathbf{\Bar{x}}(q)$ is the mean of the authority or hub score vector, and $sd(\mathbf{x}(q))$ is the standard deviation of the same vector. What do these scores converge toward? It turns out that as we iterate across steps, we end up coming up with a vector perfectly correlated to the subdominant eigenvector (corresponding to the second largest eigenvalue) of the matrix $(\mathbf{D}_{i}^{-1} \mathbf{A}^T \mathbf{D}_{o}^{-1} \mathbf{A})$ (for the authority scores) and the matrix $(\mathbf{D}_{o}^{-1} \mathbf{A} \mathbf{D}_{i}^{-1} \mathbf{A}^T)$ (for the hub scores), where $\mathbf{D}_{i}$ is the diagonal matrix containing the $k^{in}$ vector along the diagonals and $\mathbf{D}_{o}$ is the corresponding diagonal out-degree matrix (for both these matrices the dominant eigenvector, corresponding to $\lambda_1 = 1$ is the ``trivial'' vector containing constant entries). Note these matrices are essentially the common in and out-neighbor matrices---which are the matrices whose eigenvectors the standard Kleinberg reflective centralities converge to---but with the adjacency matrix and its transpose pre-multiplied by the inverse of the out and in-neighbors of each node before being multiplied by one another. Essentially, this involves moving from raw sums in the Kleinberg approach to averages.
+
+Importantly, it has been shown that the reflective centrality computed in equation~\ref{eq:ca1} is equivalent to the row and column scores for the correspondence analysis of the original adjacency matrix. Correspondence Analysis has been advocated for before in social network analysis as a method to analyze square adjacency matrices \citep{noma_smith85}, with an emphasis on finding ``optimal scores'' to re-arrange the rows and columns of the matrix to reveal a grouping pattern (in the style of blockmodeling). Here, it is shown that, in addition to doing that, the scores corresponding to the first dimension of a simple CA of the adjacency matrix can also be interpreted as a type of reflective centrality for directed graphs based on averages (of averages) of the in(out) degrees of the nodes that a given node sends(receives) ties to(from). 
 
 
 %% Loading bibliography style file
