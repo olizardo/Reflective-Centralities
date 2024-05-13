@@ -18,32 +18,57 @@
 ```
 
 ```{r}
-     set.seed(235)
-     gr <- play_gnp(12, .18, directed = TRUE, loops = FALSE) %>% 
-        mutate(name = LETTERS[1:12])
-     p <- ggraph(gr, layout = 'kk')
-     p <- p + geom_edge_parallel(color = "steelblue4", edge_width = 1.15,
-              arrow = arrow(length = unit(5, 'mm')),
-              end_cap = circle(8, 'mm'), 
-              sep = unit(8, 'mm'))
-     p <- p + geom_node_point(aes(x = x, y = y), size = 22, color = "tan2") 
-     p <- p + geom_node_text(aes(label = name), size = 12, color = "white")
-     p <- p + theme_graph() 
-     p
-     ggplot2::ggsave(here("Plots", "directed.png"), width = 15, height = 15)
-     
-     gr.u <- as.undirected(gr, mode = "collapse")
-     p <- ggraph(gr.u, layout = 'kk')
-     p <- p + geom_edge_link(color = "steelblue", edge_width = 1.25) 
-     p <- p + geom_node_point(aes(x = x, y = y), size = 22, color = "tan2") 
-     p <- p + geom_node_text(aes(label = name), size = 12, color = "white")
-     p <- p + theme_graph() 
-     p
-     ggplot2::ggsave(here("Plots", "undirected.png"), width = 15, height = 15)
-     
-    A <- as.matrix(as_adjacency_matrix(gr))
-    B <- as.matrix(as_adjacency_matrix(gr.u))
+    set.seed(456)
+    dg <- play_gnp(12, .2) %>% 
+        mutate(name = LETTERS[1:12]) 
+    ug <- as.undirected(gr, mode = "collapse")
+    oz <- which(rowSums(A) == 0)
+    iz <- which(colSums(A) == 0)
+    nodes <- 1:12
+    for (i in oz)  {
+        dg <- add_edges(dg, c(i, sample(nodes[-oz], 1)))
+        }
+    for (j in iz) {
+        dg <- add_edges(dg, c(sample(nodes[-iz], 1),j))
+        }
+    A <- as.matrix(as_adjacency_matrix(dg))
+    B <- as.matrix(as_adjacency_matrix(ug))
+
+    p <- ggraph(dg, layout = 'stress')
+    p <- p + geom_edge_parallel(color = "steelblue4", edge_width = 1.15,
+          arrow = arrow(length = unit(5, 'mm')),
+          end_cap = circle(8, 'mm'), 
+          sep = unit(8, 'mm'))
+    p <- p + geom_node_point(aes(x = x, y = y), size = 22, color = "tan2") 
+    p <- p + geom_node_text(aes(label = name), size = 12, color = "white")
+    p <- p + theme_graph() 
+    p
+    ggplot2::ggsave(here("Plots", "directed.png"), width = 15, height = 15)
+    
+    p <- ggraph(ug, layout = 'stress')
+    p <- p + geom_edge_link(color = "steelblue", edge_width = 1.25) 
+    p <- p + geom_node_point(aes(x = x, y = y), size = 22, color = "tan2") 
+    p <- p + geom_node_text(aes(label = name), size = 12, color = "white")
+    p <- p + theme_graph() 
+    p
+    ggplot2::ggsave(here("Plots", "undirected.png"), width = 15, height = 15)
 ```
+
+```{r}
+    source(here("Functions", "salsa.R"))
+    source(here("Functions", "salsa2.R"))
+
+    ca <- CA(A, graph = F)
+    Dr <- diag(1/rowSums(A))
+    Dc <- diag(1/colSums(A))
+    e1 <- eigen(Dr %*% A %*% Dc %*% t(A))
+    e2 <- eigen(Dc %*% t(A) %*% Dr %*% A)
+    sa <- salsa(A)
+    a <- cbind(e1$vectors[, 2], e2$vectors[, 2], 
+               ca$row$coord[,1], ca$col$coord[,1], sa$m.h[, sa$k], sa$m.a[,sa$k])
+    round(cor(a), 2)
+```
+
 
 
 ```{r}
@@ -67,16 +92,17 @@
      kbl(t, format = "latex", booktabs = T, 
           linesep = "", digits = 3, 
          row.names = FALSE,
-         col.names = c("", "Bonacich", "", "Seeley", "", "Hub Score", "", "Auth. Score")) %>%
+         col.names = c("", "Bonacich", "", "Seeley", "", 
+                       "Hub Score", "", "Auth. Score")) %>%
           kable_styling(latex_options = c("hold_position")) %>% 
-                    column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
-
+          column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
+          column_spec(1:8, width = "1 em") %>% 
           save_kable(here("Tabs", "tab1.tex"))
 
 ```
           
           
           
-```
+          
 
 
