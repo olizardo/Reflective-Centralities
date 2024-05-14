@@ -1,24 +1,26 @@
-salsa <- function(A, e = 0.000001) { 
+salsa <- function(A, iter = 50) { #From Fouss et al. 2016, p. 226
      n <- nrow(A)
      c.h <- 1
      c.a <- 1
-     h <- rowSums(A)  #initializing hub scores to outdegrees
-     a <- colSums(A)  #initializing authority scores to indegrees
+     h <- rep(1, n)/sqrt(n)  #initializing hub scores
+     a <- rep(1, n)/sqrt(n)  #initializing authority scores
      m.h <- h
      m.a <- a
+     Wr <- A/rowSums(A)
+     Wc <- A/colSums(A)
      k <- 0 #initializing counter
-     while (c.h > e & c.a > e) {
+     while (k < iter) {
           o.h <- h
           o.a <- a
-          h <- (A %*% a)/rowSums(A)  #at step 1 h equals the sum of the indegrees of each of i's out-neighbors divided by the i's outdegree
-          h <- scale(h) #standardizing h
-          a <- (t(A) %*% h)/colSums(A)  #at step 1 a equals the sum of the outdegrees of each of i's in-neighbors divided by the i's indegree
-          a <- scale(a) #standardizing a
+          h <- Wc %*% o.a #hub scores a function of previous authority scores
+          h <- h/norm(h, type = "E")
+          a <- t(Wr) %*% o.h #authority scores a function of previous hub scores
+          a <- a/norm(a, type = "E")
           c.h <- abs(sum(abs(o.h) - abs(h)))
           c.a <- abs(sum(abs(o.a) - abs(a)))
           m.a <- cbind(m.a, a) #building authority score matrix
           m.h <- cbind(m.h, h) #building hub score matrix
           k <- k + 1 #incrementing counter
      }
-return(list(k = k, m.a = round(m.a, 4), m.h = round(m.h, 4)))
+     return(list(k = k, m.a = round(m.a, 4), m.h = round(m.h, 4)))
 }

@@ -62,51 +62,57 @@
 ```
 
 ```{r}
-    source(here("Functions", "salsa.R"))
-    source(here("Functions", "salsa2.R"))
-
-    ca <- CA(A, graph = F)
-    Dr <- diag(1/rowSums(A))
-    Dc <- diag(1/colSums(A))
-    e1 <- eigen(Dr %*% A %*% Dc %*% t(A))
-    e2 <- eigen(Dc %*% t(A) %*% Dr %*% A)
-    sa <- salsa(A)
-    a <- cbind(Re(e1$vectors[, 2]), sa$m.h[, sa$k], Re(e2$vectors[, 2]), sa$m.a[,sa$k])
-    round(cor(a), 2)
-    a
-```
-
-
-
-```{r}
      bon.res <- bonacich(B)
      seeley.res <- seeley(B)
+     hits.res <- hits(A)
      t.b <- bon.res$m[, bon.res$k]
      t.b <- sort(t.b, decreasing = TRUE)
      t.b <- cbind(names(t.b), round(t.b, 3))
      t.s <- seeley.res$m[, seeley.res$k]
      t.s <- sort(t.s, decreasing = TRUE)
      t.s <- cbind(names(t.s), round(t.s, 3))
-     hits.res <- hits(A)
      t.a <- hits.res$m.a[, hits.res$k]
      t.h <- hits.res$m.h[, hits.res$k]
      t.a <- sort(t.a, decreasing = TRUE)
      t.h <- sort(t.h, decreasing = TRUE)
      t.a <- cbind(names(t.a), round(t.a, 3))
      t.h <- cbind(names(t.h), round(t.h, 3))
-
      t <- data.frame(cbind(t.b, t.s, t.a, t.h))
+     t$X2 <- as.numeric(t$X2)
+     t$X4 <- as.numeric(t$X4)
+     t$X6 <- as.numeric(t$X6)
+     t$X8 <- as.numeric(t$X8)
+
      kbl(t, format = "latex", booktabs = T, 
-          linesep = "", digits = 3, 
-         row.names = FALSE,
-         col.names = c("", "Bonacich", "", "Seeley", "", 
-                       "Hub Score", "", "Auth. Score")) %>%
-          kable_styling(latex_options = c("hold_position")) %>% 
-          column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
-          column_spec(1:8, width = "1.5 em") %>% 
-          save_kable(here("Tabs", "tab1.tex"))
+        linesep = "", digits = 3, align = "r",
+        row.names = FALSE,
+        col.names = c("", "Bonacich", "", "Seeley", "", 
+                   "Hub Score", "", "Auth. Score")) %>%
+        kable_styling(latex_options = c("hold_position")) %>% 
+        column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
+        column_spec(1:8, width = "1.75 em") %>% 
+        row_spec(0, align = "l") %>% 
+        save_kable(here("Tabs", "tab1.tex"))
 
 ```
+
+```{r}
+    source(here("Functions", "salsa.R"))
+    source(here("Functions", "hits.R"))
+    ca <- CA(A, graph = F)
+    Dr <- diag(1/rowSums(A))
+    Dc <- diag(1/colSums(A))
+    e1 <- eigen(A %*% t(A))
+    e2 <- eigen(t(A) %*% A)
+    sa <- salsa(A)
+    ha <- hits(A)
+    a <- cbind(Re(e1$vectors[, 1]), sa$m.h[, sa$k], 
+               Re(e2$vectors[, 1]), sa$m.a[, sa$k], 
+               ha$m.a[, ha$k], ha$m.h[, ha$k])
+    round(cor(a), 2)
+    a
+```
+
           
           
           
