@@ -2,11 +2,12 @@
 
 
 ```{r setup, include=FALSE}
-     library(ggraph)
-     library(here)
-     library(igraph)
-     library(kableExtra)
-     library(tidygraph)
+    library(FactoMineR)
+    library(ggraph)
+    library(here)
+    library(igraph)
+    library(kableExtra)
+    library(tidygraph)
 ```
 
 
@@ -21,7 +22,7 @@
     set.seed(456)
     dg <- play_gnp(12, .25) %>% 
         mutate(name = LETTERS[1:12]) 
-    ug <- as.undirected(gr, mode = "collapse")
+    A <- as.matrix(as_adjacency_matrix(dg))
     oz <- which(rowSums(A) == 0)
     iz <- which(colSums(A) == 0)
     iso.i <- which(degree(dg, mode = "in") == 0)
@@ -102,15 +103,19 @@
     ca <- CA(A, graph = F)
     Dr <- diag(1/rowSums(A))
     Dc <- diag(1/colSums(A))
-    e1 <- eigen(A %*% t(A))
-    e2 <- eigen(t(A) %*% A)
     sa <- salsa(A)
     ha <- hits(A)
+    e1 <- eigen(Dr %*% A %*% t(Dc %*% A))
+    e2 <- eigen(t(Dc %*% A) %*% Dr %*% A)
+    e3 <- eigen(A %*% t(A))
+    e4 <- eigen(t(A) %*% A)
     a <- cbind(Re(e1$vectors[, 1]), sa$m.h[, sa$k], 
                Re(e2$vectors[, 1]), sa$m.a[, sa$k], 
-               ha$m.a[, ha$k], ha$m.h[, ha$k])
+               ha$m.a[, ha$k], ha$m.h[, ha$k],
+               ca$row$coord[,1], ca$col$coord[,1],
+               Re(e3$vectors[, 1]), Re(e4$vectors[, 1]))
     round(cor(a), 2)
-    a
+    round(a, 2)
 ```
 
           
