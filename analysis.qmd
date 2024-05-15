@@ -66,32 +66,41 @@
      bon.res <- bonacich(B)
      seeley.res <- seeley(B)
      hits.res <- hits(A)
+     salsa.res <- salsa(A)
      t.b <- bon.res$m[, bon.res$k]
      t.b <- sort(t.b, decreasing = TRUE)
      t.b <- cbind(names(t.b), round(t.b, 3))
-     t.s <- seeley.res$m[, seeley.res$k]
-     t.s <- sort(t.s, decreasing = TRUE)
-     t.s <- cbind(names(t.s), round(t.s, 3))
+     t.p <- seeley.res$m[, seeley.res$k]
+     t.p <- sort(t.p, decreasing = TRUE)
+     t.p <- cbind(names(t.p), round(t.p, 3))
      t.a <- hits.res$m.a[, hits.res$k]
      t.h <- hits.res$m.h[, hits.res$k]
      t.a <- sort(t.a, decreasing = TRUE)
      t.h <- sort(t.h, decreasing = TRUE)
      t.a <- cbind(names(t.a), round(t.a, 3))
      t.h <- cbind(names(t.h), round(t.h, 3))
-     t <- data.frame(cbind(t.b, t.s, t.a, t.h))
+     t.s.a <- salsa.res$m.a[, salsa.res$k]
+     t.s.h <- salsa.res$m.h[, salsa.res$k]
+     t.s.a <- sort(t.s.a, decreasing = TRUE)
+     t.s.h <- sort(t.s.h, decreasing = TRUE)
+     t.s.a <- cbind(names(t.s.a), round(t.s.a, 3))
+     t.s.h <- cbind(names(t.s.h), round(t.s.h, 3))
+     t <- data.frame(cbind(t.b, t.s, t.a, t.h, t.s.a, t.s.h))
      t$X2 <- as.numeric(t$X2)
      t$X4 <- as.numeric(t$X4)
      t$X6 <- as.numeric(t$X6)
      t$X8 <- as.numeric(t$X8)
-
+     t$X10 <- as.numeric(t$X8)
+     t$X12 <- as.numeric(t$X8)
      kbl(t, format = "latex", booktabs = T, 
         linesep = "", digits = 3, align = "r",
         row.names = FALSE,
         col.names = c("", "Bonacich", "", "Seeley", "", 
-                   "Hub Score", "", "Auth. Score")) %>%
+                   "Hub Score (HITS)", "", "Auth. Score (HITS)", 
+                   "", "Hub Score (SALSA)", "", "Auth. Score (SALSA)")) %>%
         kable_styling(latex_options = c("hold_position")) %>% 
-        column_spec(c(1, 3, 5, 7), bold = TRUE) %>% 
-        column_spec(1:8, width = "1.75 em") %>% 
+        column_spec(c(1, 3, 5, 7, 9, 11), bold = TRUE) %>% 
+        column_spec(1:12, width = "1.75 em") %>% 
         row_spec(0, align = "l") %>% 
         save_kable(here("Tabs", "tab1.tex"))
 
